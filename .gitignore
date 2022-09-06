@@ -1,0 +1,36 @@
+.DS_Store
+*.DS_Store
+.localized
+
+# Images
+#*.png
+#*.jpeg
+#*.jpg
+#*.PNG
+#*.JPEG
+#*.JPG
+
+# Video files
+*.mov
+*.mp4
+*.gif
+*.avi
+*.mpg
+*.mp2
+*.mpg
+*.mpe
+*.mpv
+*.MOV
+*.MP4
+*.GIF
+*.AVI
+*.MPG
+*.MP2
+*.MPG
+*.MPE
+*.MPV
+
+# node_modules
+node_modules/
+node_modules/**
+node_modules
