@@ -217,7 +217,87 @@ However, imagine that we want to improve our flexibility in the code and decide 
 # Hoare Logic
 
 ## 1.
-<Your answer goes here>
+
+How the code currently looks like:
+
+```
+{ t r u e }
+x = 1 0;
+{ x > 1 }
+y = 4 2;
+{ x > 1 , y > 1 }
+z = x + y ;
+{ z > 1 }
+```
+
+
+
+Without altering the postcondition the code could be changed quite a bit. For example to this:
+
+```
+{ t r u e }
+x = 2;
+{ x > 1 }
+y = 2;
+{ x > 1 , y > 1 }
+z = x + y ;
+{ z > 1 }
+```
+
+
+
+If we look at the program above as two separate programs:
+
+```
+Program A:
+{ t r u e }
+x = 1 0;
+{ x = 10 }
+y = 42;
+{ x > 1 , y > 1 }
+```
+
+
+
+```
+Program B:
+{ x > 1 , y > 1 }, 
+z = x + y ;
+{ z > 1 }
+```
+
+
+
+The strongest postcondition of A would be { x = 10 , y = 42 }, and it is stronger than the weakest pre condition of B*. This gives us modularity in the sense that we can change program A a lot without changing B. We can change the programs a lot here since both y and x can assume values between 1 and inf without the precondition being violated in program B. 
+
+**(actually for z > 1 I would argue this is the weakest precondition `{ x > 1 /\ y >= 0 or x >= 0 /\ y > 1 }`, since z = x + y still fulfills the postcondition, only one of addends needs to be bigger than 1. However if you do this you could keep going with examples such as `{ x > 2 /\ y >= -1 or x >= -1 /\ y > 2 }`, so I don't know if this is correct.*
+
+
+
+Lets say the postcondition was stronger, like `{ z = 42 }`. Then the weakest precondition would look something like this:
+
+```
+{ y = 42 - x }, 
+z = x + y ;
+{ z = 42 }
+```
+
+
+
+You would have to be more specific in the way you change your program A in order for the precondition to still hold.
+
+```
+Program A:
+{ t r u e }
+x = 5;
+{ x = 5 }
+y = 47;
+{ y = 42 - x } //
+```
+
+ The strongest post condition in the above code is { x = 5 , y = 47 }, and is stronger than { y = 42 - x }, so we have some modularity in the sense that we can change the code to example { x = 20 , y = 62 } etc, but it is not as modular as the first example.
+
+
 
 
 ## 2.
@@ -235,25 +315,61 @@ However, imagine that we want to improve our flexibility in the code and decide 
 ## 3.
 ```
 1 { x > 0 }
-2 y := ( x / 2 ) ∗ 2
-3 { }
+2 y := ( (x > 0) / 2 ) * 2
+3 { (x is odd => y = x - 1) /\ (x is even => y = x) }
 4 z := x − y
-5 { }
-6 a := z ∗ 5 + ( 1 − z ) ∗ 12
-7 { (( x i s odd ) => a = 5 ) /\ (( x is even ) => a = 12 )}
+5 { (x is odd => z = 1) /\ (x is even => z = 0) }
+6 a := z * 5 + ( 1 − z ) * 12
+7 { (( x is odd ) => a = 5 ) /\ (( x is even ) => a = 12 )}
 ```
 
 
 
 
 ## 4.1.
-<Your answer goes here>
+```
+1 { true }
+2 d := ( 2 − (a+1)/a ) / 2 ;
+3 { a <= 0 => d = 1 /\ a > 0 => d = 0}
+4 m := d * 2 + (1−d) * 3 ; 
+5 { a <= 0 => m = 2 /\ a > 0 => m = 3 } 
+6 x := b * 2;
+7 { x = b * 2, a <= 0 => m = 2 /\ a > 0 => m = 3 }
+8 x := x * 2 ;
+9 { x = b * 4, a <= 0 => m = 2 /\ a > 0 => m = 3 }
+10 x := m * x ;
+11 { (( a <= 0 ) => x = 8*b) /\ (( a > 0 ) => x = 12*b) }
+12 x := x + 1 ;
+13 { (( a <= 0 ) => x = 8*b+1) /\ (( a > 0 ) => x = 12*b+1) }
+```
+
+
 
 ## 4.2.
-<Your answer goes here>
+The conditional is wether ***a*** is a positive or negative integer. 
+
+
 
 ## 5.
-<Your answer goes here>
+```
+ 1  { true }
+ 2  x := b * 2;
+ 3  { x = b * 2 }
+ 4  x := x * 2 ;
+ 5  { x = b * 4 }
+ 6  x := m * x ;
+ 7  { x =  m * b * 4 }
+ 8  x := x + 1 ;
+ 9  { x = m * b * 4 + 1 }
+10  m := d * 2 + (1−d) * 3; // Simpler form is m = 3 - d 
+11  { x = 12*b - 4*b*d + 1} // expanded from (3-d)*4*b + 1
+12  d := ( 2 − (a+1)/a ) / 2 ;
+13  { (( a <= 0 ) => x = 8*b+1) /\ (( a > 0 ) => x = 12*b+1) }
+```
+
+
+
+
 
 
 ## 6.
