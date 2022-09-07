@@ -64,7 +64,7 @@ const binaryUserSearch =
 
 
 
-In some regards this might appear as safe code. The binaryUserSearch function takes a list that's supposably garanteed to be sorted. The Type SortedUserDataList even includes a unique symbol stored in __type_proof, so that it can only be (easily) created using the sortedUserDataList function from sortedUserDataList.ts. Of course you can always use an "**as**" operator and cast a non sorted list to a SortedUserDataList, but most people know that's bad practice (... hopefully). 
+In some regards this might appear as safe code. The binaryUserSearch function takes a list that's supposedly guaranteed to be sorted. The Type SortedUserDataList even includes a unique symbol stored in __type_proof, so that it can only be (easily) created using the sortedUserDataList function from sortedUserDataList.ts. Of course you can always use an "**as**" operator and cast a non sorted list to a SortedUserDataList, but most people know that's bad practice (... hopefully). 
 
 
 
@@ -72,7 +72,7 @@ In some regards this might appear as safe code. The binaryUserSearch function ta
 
 I would argue that the problem with binaryUserSearch is that it assumes that the incoming SortedUserDataList is sorted in ascending order in regards to the user.name field. This is not clear without reading the code of sortedUserDataList.ts. 
 
-Let's say in the future the sorting function changes to descending, alphanumeric, or in regards to "name+email" instead. We might start seeing different behaviour. 
+Let's say in the future the sorting function changes to descending, alphanumeric, or in regards to user.email instead. We will most likely start seeing different behavior. 
 
 
 
@@ -84,7 +84,7 @@ This is a little bit how the precondition of binaryUserSearch would look like to
 
 
 
-Which is not gauranteed in the type of SortedUserDataList itself. We just assume it is, because we've read and run the code once. 
+Which is not guaranteed in the type of SortedUserDataList itself. We just assume it is, because we've read and run the code once. 
 
 We could however make the precondition stronger by including a comparator in the SortedList type. See example:
 
@@ -153,24 +153,22 @@ Now we know that whatever is being sorted is being sorted in accordance to the c
 
 
 
-Now, wether comp is in ascending, descending or alphanumeric order doesn't matter. Becuase it's still something that we don't have to assume, since the comp function is passed with the sortedDataList. 
-
-
-
-DISCLAIMER: It might not really make practical sense for binarySearch to require you to pass "data: D" when it's the data you're looking for to begin with. 
+Whether comp is in ascending, descending or alphanumeric order doesn't matter. Whatever the comp function does to the list the precondition will hold true if comp has been applied
 
 
 
 ## The Design of Software is a Thing Apart.
 
-Imagine a software that displays an inventory of items in a grocery store. You might want to show a table of items is the following matter:
+Imagine an admin software for a grocery store that displays an inventory of items in the following manner: 
 
 ```
-Inventory: 
+Inventory count: 
 Chicken wing(s): 21
 Milk carton(s): 46
 Tuna can(s): 87
 ```
+
+I.e the name of the item followed by a count of how many is in the store. 
 
 
 
@@ -201,13 +199,26 @@ Tuna can: 1662989568
 
 
 
-However, imagine that we want to improve our flexibility in the code and decide to use Date instead of number for the timestamp, this would not be possible without rewriting ItemCount and disturbing the part of application that counts the number of items in the inventory. 
+However, imagine that we want to improve our flexibility in the code and decide to use Date instead of number for the timestamp, this would not be possible without rewriting ItemCount and disturbing the part of application that counts the number of items in the inventory. So inventory count and inventory expiry date would be better of using different data types. 
 
 
 
 
 ## Painless Functional Specifications Part 1.
-<Your answer goes here>
+The way I understand Joel Spolsky in the article is that having a well written design spec before starting to code is good because: 
+
+* Mainly the quality of the code increases - Less technical debt because of more clarity before starting to write code.
+* Testing becomes more reliable. Tests are supposed to make sure the code works as the design of the application. 
+* The program/product itself usually gets better - No compromise between the "wrong design and the ideal design", since wrong design decisions are avoided by having a spec to follow.
+* Technical manuals improve, since they become easier to write when there is a clear explanation in the spec of how the product is supposed to work.
+
+So the artifacts would be code, test code, overall product, and technical manuals. 
+
+
+
+Furthermore, a well written design specs also improves the work for scheduling, marketing, and business development. However, I'm not sure these are considered "artifacts".
+
+
 
 
 ## Modules Matters Most.
@@ -229,6 +240,8 @@ y = 4 2;
 z = x + y ;
 { z > 1 }
 ```
+
+
 
 
 
