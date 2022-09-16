@@ -1,0 +1,68 @@
+
+
+----------------------------------------------------------------
+###################################################
+### N O T E S   F R O M   I T E R A T I O N   1 ###
+###################################################
+----------------------------------------------------------------
+
+Based on the brainstorm below and the list of possible future features. An initial, somewhat naive, approach would be something like: 
+
+class Task
+    - name: String
+    - isDone: boolean
+    + toggleDone: () -> void
+    + isDone: () -> boolean
+    + getId: () -> Long
+
+class TodoList 
+    - tasks: Set<Task>
+    + createTask: (name: String) -> void
+    + removeTask: (task: Task) -> void 
+    + getTasks: () -> List<Tasks>
+
+In an application that could be used beyond the data layer things like ID for entities, DTOs, and database service would be required. For this task I'll skip that.
+
+---
+
+Looking at the brainstorm I decided to implement the first iteration of features with the possibility that the following features might be implemented in the future. The likelihood of them being required is in descending order (... based on what I would like to see in a todo app):
+* Tasks might have different priorities.
+* Items might be hidden, based on different properties (finished, non-urgent, etc)
+* A Task might have subtasks.
+* Tasks might belong to different categories/labels. 
+* A Task might have reminders. 
+* A task might repeat itself.
+* Tasks might be sorted based on different properties.
+
+---
+Initial feature - set: 
+* A list of todo tasks
+* List can be viewed.
+* Create tasks.
+* Delete tasks.
+* Mark/toggle task as done.
+
+BRAINSTORM - Keep in mind for future possible add-ons:
+
+        * It might need to be possible to rename tasks.
+        * Name/rename the todo list.
+        * Have several different todo lists per user.
+        * Tasks might have different priorities.
+            * Todo list might have different sorting systems (custom sorting, create date, priority, unfinished, alphabetical, etc)
+        * Items might be hidden, based on different properties (finished, non-urgent, etc)
+        * A TodoList might have different sections, where different tasks belong.
+            * Tasks might belong to different categories.
+            * A task might have different labels attached to it. (Colors, Categories, Adjectives, etc) 
+        * A Task might have subtasks.
+        * A task might have one or several reminders.
+            * A task might have a deadline. (What happens after the deadline? Does the task remove itself?)
+            * A task might have a set time in a schedual. For example an event. Wether this is a todo item or not is up for discussion, but it might be a requirement to have in the future. 
+        * A task might repeat itself. (For example "workout", "clean apartment", "pay bills" etc is usually reoccurring tasks) 
+
+        * The service providing the todo list might have different users. 
+
+
+
+
+
+
