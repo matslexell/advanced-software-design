@@ -1,4 +1,6 @@
-package se.matslexell.todolist.domain;
+package se.matslexell.todolist.domain.todo;
+
+import se.matslexell.todolist.domain.todo.Task;
 
 import java.util.HashSet;
 import java.util.Set;
