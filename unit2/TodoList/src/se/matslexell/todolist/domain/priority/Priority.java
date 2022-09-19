@@ -7,7 +7,7 @@ public class Priority {
     private String name;
     private String description;
 
-    protected Priority(String name, String description, int prioValue) {
+    protected Priority(String name, String description) {
         this.name = name;
         this.description = description;
     }

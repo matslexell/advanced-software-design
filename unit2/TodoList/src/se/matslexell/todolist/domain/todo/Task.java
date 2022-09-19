@@ -1,6 +1,6 @@
 package se.matslexell.todolist.domain.todo;
 
-import se.matslexell.todolist.domain.listeners.TaskProperty;
+import se.matslexell.todolist.domain.listeners.TaskPropertyListener;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -10,12 +10,12 @@ public class Task {
 
     private boolean isDone;
 
-    private Set<TaskProperty> taskProperties;
+    private Set<TaskPropertyListener> taskPropertyListeners;
 
     protected Task(String description) {
         this.description = description;
         this.isDone = false;
-        taskProperties = new HashSet<>();
+        taskPropertyListeners = new HashSet<>();
     }
 
     public String getDescription() {
@@ -34,16 +34,16 @@ public class Task {
         return isDone;
     }
 
-    public void removeMe() {
-        taskProperties.forEach(taskProperty -> taskProperty.onRemoveTask(this));
+    protected void removeMe() {
+        taskPropertyListeners.forEach(taskProperty -> taskProperty.onRemoveTask(this));
     }
 
-    public void onAddProperty(TaskProperty taskProperty) {
-        taskProperties.add(taskProperty);
+    public void onAddPropertyListener(TaskPropertyListener taskPropertyListener) {
+        taskPropertyListeners.add(taskPropertyListener);
     }
 
-    public void onRemoveProperty(TaskProperty taskProperty) {
-        taskProperties.remove(taskProperty);
+    public void onRemovePropertyListener(TaskPropertyListener taskProperty) {
+        taskPropertyListeners.remove(taskProperty);
     }
 }
 

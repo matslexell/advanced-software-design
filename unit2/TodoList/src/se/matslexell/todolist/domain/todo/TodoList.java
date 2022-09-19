@@ -9,16 +9,17 @@ import java.util.stream.Collectors;
 public class TodoList {
     private Set<Task> tasks;
 
-    TodoList() {
+    public TodoList() {
         this.tasks = new HashSet<>();
     }
 
-    void createTask(String description) {
+    public void createTask(String description) {
         tasks.add(new Task(description));
     }
 
-    void removeTask(Task task) {
+    public void removeTask(Task task) {
         tasks.remove(task);
+        task.removeMe();
     }
 
     public Set<Task> getTasks() {

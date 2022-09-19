@@ -1,5 +1,6 @@
 package se.matslexell.todolist.domain;
 
+import se.matslexell.todolist.domain.priority.Priorities;
 import se.matslexell.todolist.domain.todo.Task;
 import se.matslexell.todolist.domain.todo.TodoList;
 
@@ -15,6 +16,14 @@ public class Test {
         todoList.createTask("Clean");
         todoList.createTask("Workout");
         todoList.createTask("Eat");
+
+        Priorities priorities = new Priorities();
+        priorities.createNewPriority("P0", "Most urgent!");
+        priorities.createNewPriority("P1", "Very important");
+        priorities.createNewPriority("P2", "Do this when you feel like");
+        priorities.createNewPriority("P3", "Not so important");
+
+
 
 
         while (true) {
