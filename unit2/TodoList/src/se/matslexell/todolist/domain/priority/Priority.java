@@ -1,13 +1,14 @@
 package se.matslexell.todolist.domain.priority;
 
-import java.util.HashSet;
-import java.util.Set;
+import se.matslexell.todolist.domain.property.TaskProperty;
+import se.matslexell.todolist.domain.todo.Task;
 
-public class Priority {
+public class Priority extends TaskProperty {
     private String name;
     private String description;
 
     protected Priority(String name, String description) {
+        super();
         this.name = name;
         this.description = description;
     }
@@ -26,5 +27,14 @@ public class Priority {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public void addPropertyTo(Task task) {
+        if (!this.isPropertyOf(task)) {
+            task.getProperties().stream().filter(taskProperty -> taskProperty instanceof Priority).forEach(
+                    priority -> priority.removePropertyFrom(task));
+            super.addPropertyTo(task);
+        }
     }
 }

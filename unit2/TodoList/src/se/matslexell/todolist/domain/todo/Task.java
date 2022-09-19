@@ -1,6 +1,6 @@
 package se.matslexell.todolist.domain.todo;
 
-import se.matslexell.todolist.domain.listeners.TaskPropertyListener;
+import se.matslexell.todolist.domain.property.TaskProperty;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -10,12 +10,12 @@ public class Task {
 
     private boolean isDone;
 
-    private Set<TaskPropertyListener> taskPropertyListeners;
+    private Set<TaskProperty> taskProperties;
 
     protected Task(String description) {
         this.description = description;
         this.isDone = false;
-        taskPropertyListeners = new HashSet<>();
+        taskProperties = new HashSet<>();
     }
 
     public String getDescription() {
@@ -26,8 +26,8 @@ public class Task {
         this.description = description;
     }
 
-    public boolean toggleDone() {
-        return isDone = !isDone;
+    public void toggleDone() {
+        isDone = !isDone;
     }
 
     public boolean isDone() {
@@ -35,15 +35,29 @@ public class Task {
     }
 
     protected void removeMe() {
-        taskPropertyListeners.forEach(taskProperty -> taskProperty.onRemoveTask(this));
+        new HashSet<>(taskProperties).forEach(taskProperty -> taskProperty.removePropertyFrom(this));
     }
 
-    public void onAddPropertyListener(TaskPropertyListener taskPropertyListener) {
-        taskPropertyListeners.add(taskPropertyListener);
+    public void addProperty(TaskProperty taskProperty) {
+        if (!this.hasProperty(taskProperty)) {
+            taskProperties.add(taskProperty);
+            taskProperty.addPropertyTo(this);
+        }
     }
 
-    public void onRemovePropertyListener(TaskPropertyListener taskProperty) {
-        taskPropertyListeners.remove(taskProperty);
+    public void removeProperty(TaskProperty taskProperty) {
+        if (this.hasProperty(taskProperty)) {
+            taskProperties.remove(taskProperty);
+            taskProperty.removePropertyFrom(this);
+        }
+    }
+
+    public boolean hasProperty(TaskProperty taskProperty) {
+        return taskProperties.contains(taskProperty);
+    }
+
+    public Set<TaskProperty> getProperties() {
+        return new HashSet<>(taskProperties);
     }
 }
 
