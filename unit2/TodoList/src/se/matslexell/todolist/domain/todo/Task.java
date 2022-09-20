@@ -1,6 +1,7 @@
 package se.matslexell.todolist.domain.todo;
 
 import se.matslexell.todolist.domain.property.TaskProperty;
+import se.matslexell.todolist.domain.user.Permissions;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,10 +13,21 @@ public class Task {
 
     private Set<TaskProperty> taskProperties;
 
-    protected Task(String description) {
+    private Permissions permissions;
+
+    protected Task(String description, Permissions permissions) {
         this.description = description;
         this.isDone = false;
+        this.permissions = permissions;
         taskProperties = new HashSet<>();
+    }
+
+    public Permissions getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(Permissions permissions) {
+        this.permissions = permissions;
     }
 
     public String getDescription() {

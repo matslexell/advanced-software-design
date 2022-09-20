@@ -1,6 +1,9 @@
 package se.matslexell.todolist.domain.status;
 
 import se.matslexell.todolist.domain.todo.Task;
+import se.matslexell.todolist.domain.todo.TodoList;
+import se.matslexell.todolist.domain.user.Permissions;
+import se.matslexell.todolist.domain.user.User;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -11,9 +14,22 @@ import static se.matslexell.todolist.domain.property.CollectionOwnership.checkIf
 public class StatusService {
     private Set<Status> statuses;
 
-    public StatusService() {
-        this.statuses = new HashSet<>();
+    private User owner;
 
+    public StatusService(User owner) {
+        this.statuses = new HashSet<>();
+        setOwner(owner);
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
+        if(owner.getStatusService() != this) {
+            owner.setStatusService(this);
+        }
+    }
+
+    public User getOwner() {
+        return owner;
     }
 
     public void create(String status) {

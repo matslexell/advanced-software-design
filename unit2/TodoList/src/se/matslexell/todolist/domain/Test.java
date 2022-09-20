@@ -6,6 +6,8 @@ import se.matslexell.todolist.domain.status.Status;
 import se.matslexell.todolist.domain.status.StatusService;
 import se.matslexell.todolist.domain.todo.Task;
 import se.matslexell.todolist.domain.todo.TodoList;
+import se.matslexell.todolist.domain.user.Permissions;
+import se.matslexell.todolist.domain.user.User;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -14,10 +16,20 @@ public class Test {
 
     public Test() {
         Scanner scan = new Scanner(System.in);
-        TodoList todoList = new TodoList();
+        User mats = new User("mats");
+
+        TodoList todoList = new TodoList(mats);
         todoList.createTask("Clean");
         todoList.createTask("Workout");
         todoList.createTask("Eat");
+
+
+        StatusService statuses = new StatusService(mats);
+        statuses.create("blocking");
+        statuses.create("booring");
+        statuses.create("fun");
+        statuses.create("must-do");
+
 
         PriorityService priorities = new PriorityService();
         priorities.createNewPriority("P0", "Most urgent!");
@@ -25,15 +37,8 @@ public class Test {
         priorities.createNewPriority("P2", "Do this when you feel like");
         priorities.createNewPriority("P3", "Not so important");
 
-        StatusService statuses = new StatusService();
-        statuses.create("blocking");
-        statuses.create("booring");
-        statuses.create("fun");
-        statuses.create("must-do");
-
-
         while (true) {
-            List<Task> list = new ArrayList<>(todoList.getTasks());
+            List<Task> list = new ArrayList<>(todoList.getTasks(mats));
             printTodoList(list, priorities, statuses);
 
             System.out.println("\nWhat do you want to do? (add [text], toggle [idx], remove [idx], prio, status)");

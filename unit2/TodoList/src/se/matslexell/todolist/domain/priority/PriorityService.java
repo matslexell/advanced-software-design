@@ -1,6 +1,7 @@
 package se.matslexell.todolist.domain.priority;
 
 import se.matslexell.todolist.domain.todo.Task;
+import se.matslexell.todolist.domain.user.Permissions;
 
 import java.util.ArrayList;
 import java.util.Comparator;
