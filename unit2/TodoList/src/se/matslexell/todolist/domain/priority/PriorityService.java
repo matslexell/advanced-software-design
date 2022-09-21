@@ -1,7 +1,6 @@
 package se.matslexell.todolist.domain.priority;
 
 import se.matslexell.todolist.domain.todo.Task;
-import se.matslexell.todolist.domain.user.Permissions;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -15,6 +14,8 @@ public class PriorityService {
 
     public PriorityService() {
         priorities = new ArrayList<>();
+
+
     }
 
     public void createNewPriority(String name, String description) {

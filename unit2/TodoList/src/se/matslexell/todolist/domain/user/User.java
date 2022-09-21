@@ -2,6 +2,7 @@ package se.matslexell.todolist.domain.user;
 
 import se.matslexell.todolist.domain.status.StatusService;
 import se.matslexell.todolist.domain.todo.TodoList;
+import se.matslexell.todolist.domain.user.Permissions.ReadAccessAll;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,7 +16,7 @@ public class User {
 
     public User(String username) {
         this.username = username;
-        defaultPermissions = Permissions.create(this, Permissions.VisibilityType.ALL);
+        defaultPermissions = new Permissions(this, new ReadAccessAll());
     }
 
     public TodoList getTodoList() {
@@ -67,7 +68,7 @@ public class User {
     }
 
     public Permissions getDefaultPermissions() {
-        return defaultPermissions.copy();
+        return defaultPermissions;
     }
 
     public boolean isFriend(User user) {

@@ -1,8 +1,6 @@
 package se.matslexell.todolist.domain.status;
 
 import se.matslexell.todolist.domain.todo.Task;
-import se.matslexell.todolist.domain.todo.TodoList;
-import se.matslexell.todolist.domain.user.Permissions;
 import se.matslexell.todolist.domain.user.User;
 
 import java.util.HashSet;

@@ -1,55 +1,68 @@
 package se.matslexell.todolist.domain.user;
 
 public class Permissions {
-    private User owner;
+    protected User owner;
 
-    private VisibilityType visibilityType;
+    private ReadAccess readAccess;
 
-    private Permissions(Permissions permissions) {
-        this.owner = permissions.owner;
-        this.visibilityType = permissions.visibilityType;
-    }
-
-    private Permissions(User owner, VisibilityType visibilityType) {
+    public Permissions(User owner, ReadAccess readAccess) {
         this.owner = owner;
-        this.visibilityType = visibilityType;
+        this.readAccess = readAccess;
     }
 
-    public static Permissions create(User owner, VisibilityType visibilityType) {
-        return new Permissions(owner, visibilityType);
-    }
-
-    public Permissions copy() {
-        return new Permissions(this);
-    }
-
-    public boolean hasReadRights(User user) {
-        if (user == owner) {
-            return true;
-        }
-
-        switch (visibilityType) {
-            case ALL:
-                return true;
-            case FRIENDS:
-                return user.isFriend(owner);
-            case PRIVATE:
-                return false;
-        }
-
-        return false;
-    }
-
-    public void setVisibilityType(VisibilityType visibilityType) {
-        this.visibilityType = visibilityType;
+    public boolean hasReadAccess(User user) {
+        return readAccess.hasAccess(user, owner);
     }
 
     public User getOwner() {
         return owner;
     }
 
-    public enum VisibilityType {
-        ALL, FRIENDS, PRIVATE
+    private interface ReadAccess {
+        public boolean hasAccess(User user, User owner);
     }
+
+    private static abstract class Access {
+        protected boolean hasAccess(User user, User owner) {
+            if (user == owner) {
+                return true;
+            }
+
+            return false;
+        }
+    }
+
+    private static class All extends Access {
+        @Override
+        public boolean hasAccess(User user, User owner) {
+            return true;
+        }
+
+    }
+
+    private static class Private extends Access {
+        @Override
+        public boolean hasAccess(User user, User owner) {
+            return super.hasAccess(user, owner);
+        }
+    }
+
+    private static class Friends extends Access {
+
+        @Override
+        public boolean hasAccess(User user, User owner) {
+            return super.hasAccess(user, owner) || user.isFriend(owner);
+        }
+    }
+
+    public static class ReadAccessAll extends All implements ReadAccess {
+    }
+
+    public static class ReadAccessFriends extends Friends implements ReadAccess {
+    }
+
+    public static class ReadAccessPrivate extends Private implements ReadAccess {
+    }
+
 }
 

@@ -6,7 +6,6 @@ import se.matslexell.todolist.domain.status.Status;
 import se.matslexell.todolist.domain.status.StatusService;
 import se.matslexell.todolist.domain.todo.Task;
 import se.matslexell.todolist.domain.todo.TodoList;
-import se.matslexell.todolist.domain.user.Permissions;
 import se.matslexell.todolist.domain.user.User;
 
 import java.util.*;
@@ -15,6 +14,7 @@ import java.util.stream.Collectors;
 public class Test {
 
     public Test() {
+
         Scanner scan = new Scanner(System.in);
         User mats = new User("mats");
 

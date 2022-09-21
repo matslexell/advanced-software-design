@@ -39,7 +39,7 @@ public class TodoList {
 
     public Set<Task> getTasks(User user) {
         // Clone the set
-        return tasks.stream().filter(task -> task.getPermissions().hasReadRights(user)).collect(
+        return tasks.stream().filter(task -> task.getPermissions().hasReadAccess(user)).collect(
                 Collectors.toSet());
 
 
