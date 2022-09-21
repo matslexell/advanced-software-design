@@ -32,13 +32,17 @@ public class TodoList {
     }
 
     public void removeTask(Task task) {
-        // TODO check Collection Ownership
-        tasks.remove(task);
-        task.removeMe();
+        if (tasks.contains(task)) {
+            tasks.remove(task);
+            task.removeMe();
+        }
     }
 
     public Set<Task> getTasks(User user) {
-        // Clone the set
+        /**
+         * This filtering might make more sense doing downstream since different filtering might be applied depending
+         * on future feature set is used. But this is applied here for now...
+         */
         return tasks.stream().filter(task -> task.getPermissions().hasReadAccess(user)).collect(
                 Collectors.toSet());
 

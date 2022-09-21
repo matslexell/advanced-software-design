@@ -14,8 +14,6 @@ public class PriorityService {
 
     public PriorityService() {
         priorities = new ArrayList<>();
-
-
     }
 
     public void createNewPriority(String name, String description) {
