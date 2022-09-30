@@ -1,5 +1,6 @@
 import { isArgumentsObject } from "util/types";
-import {describe, expect, test} from '@jest/globals';
+import { describe, expect, test } from "@jest/globals";
+import { strict as assert } from 'assert';
 
 import {
   isGameFinished,
@@ -11,6 +12,7 @@ import {
   startNewGame,
   isEmptyGame,
   whoWonOrDraw,
+  winningPositionSub
 } from "./TicTacToe";
 
 type Pos = {
@@ -77,12 +79,33 @@ const fillMatrixAndPrint = (posArray: Pos[]) => {
     [" ", " ", " "],
     [" ", " ", " "],
   ];
-  posArray.forEach((pos, index) => {
-    if (index % 2 === 0) {
-      matrix[pos.row][pos.col] = "x";
-    } else {
-      matrix[pos.row][pos.col] = "o";
+  let i = 0;
+  posArray.forEach((pos) => {
+    if (matrix[pos.row][pos.col] == " ") {
+      if (i % 2 === 0) {
+        matrix[pos.row][pos.col] = "x";
+      } else {
+        matrix[pos.row][pos.col] = "o";
+      }
+      i++;
     }
+  });
+  matrix.forEach((row) => {
+    console.log(row);
+  });
+  console.log();
+  return matrix;
+};
+
+const fillMatrixAndPrintSame = (posArray: Pos[]) => {
+  const matrix: string[][] = [
+    [" ", " ", " "],
+    [" ", " ", " "],
+    [" ", " ", " "],
+  ];
+  let i = 0;
+  posArray.forEach((pos) => {
+    matrix[pos.row][pos.col] = "x";
   });
   matrix.forEach((row) => {
     console.log(row);
@@ -107,6 +130,41 @@ const playGame = (positions: Pos[]): OngoingGame | FinishedGame | EmptyGame => {
 
   return game;
 };
+
+const pos1winning: Pos[] = [
+  { col: 1, row: 0 },
+  { col: 2, row: 1 },
+  { col: 1, row: 1 },
+  { col: 0, row: 2 },
+  { col: 1, row: 1 },
+  { col: 1, row: 2 },
+];
+
+const pos2loosing: Pos[] = [
+  { col: 0, row: 0 },
+  { col: 2, row: 1 },
+  { col: 1, row: 1 },
+  { col: 0, row: 2 },
+  { col: 1, row: 1 },
+  { col: 1, row: 2 },
+];
+
+const pos3winning: Pos[] = [
+  { col: 0, row: 0 },
+  { col: 2, row: 1 },
+  { col: 1, row: 1 },
+  { col: 0, row: 2 },
+  { col: 1, row: 1 },
+  { col: 2, row: 2 },
+];
+
+fillMatrixAndPrintSame(pos1winning);
+fillMatrixAndPrintSame(pos2loosing);
+fillMatrixAndPrintSame(pos3winning);
+
+assert(winningPositionSub(pos1winning));
+assert(!winningPositionSub(pos2loosing));
+assert(winningPositionSub(pos3winning));
 
 describe("isGameFinished", () => {
   it("Game 1", () => {
