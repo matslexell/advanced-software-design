@@ -1,82 +1,149 @@
-const finishedGame = Symbol();
-const ongoingGame = Symbol();
-const emptygame = Symbol();
-
-type NonEmptyArray<T> = [T, ...T[]];
-
-function isGameFinished(
-  game: EmptyGame | OngoingGame | FinishedGame
-): game is FinishedGame {
-  return game.__type_proof == finishedGame;
-}
-
-function isEmptyGame(
-  game: EmptyGame | OngoingGame | FinishedGame
-): game is EmptyGame {
-  return game.__type_proof == emptygame;
-}
-
-function isOngoingGame(
-  game: EmptyGame | OngoingGame | FinishedGame
-): game is EmptyGame {
-  return game.__type_proof == ongoingGame;
-}
-
-function isPositionEqual(p1: Pos, p2: Pos) {
-  return p1.col == p2.col && p1.row == p2.row;
-}
-
+export {
+  Pos,
+  TicTacToe,
+  startNewGame,
+  isEmptyGame,
+  isOngoingGame,
+  isFinishedGame,
+};
+const WINNING_NUMBER = 3;
+const SIZE = 3;
 type Pos = {
   col: 0 | 1 | 2;
   row: 0 | 1 | 2;
 };
-const WINNING_NUMBER = 3;
-const SIZE = 3;
 
-type Move = { player: Player; pos: Pos };
+type TicTacToe = EmptyGame | OngoingGame | FinishedGame;
+const isEmptyGame = (game: TicTacToe): game is EmptyGame =>
+  game.__type_proof == emptygame;
+const isOngoingGame = (game: TicTacToe): game is OngoingGame =>
+  game.__type_proof == ongoingGame;
+const isFinishedGame = (game: TicTacToe): game is FinishedGame =>
+  game.__type_proof == finishedGame;
 
-type Moves<T> = {
-  moves: T;
+const emptygame = Symbol();
+type EmptyGame = {
+  __type_proof: typeof emptygame;
+  move: (pos: Pos) => OngoingGame;
+  toString: () => string;
+};
+
+const validpos = Symbol();
+type UnoccupiedPosition = {
+  __type_proof: typeof validpos;
+} & Pos;
+const ongoingGame = Symbol();
+type OngoingGame = {
+  __type_proof: typeof ongoingGame;
+  move: (pos: UnoccupiedPosition) => OngoingGame | FinishedGame;
+  takeMoveBack: () => OngoingGame | EmptyGame;
+  isPositionUnoccupied: ReturnType<typeof isPositionUnoccupied>;
+  toString: () => string;
+};
+
+const startNewGame = (): EmptyGame => {
+  const firstMove = (pos: Pos) =>
+    move([])(pos as UnoccupiedPosition) as OngoingGame;
+
+  return {
+    move: firstMove,
+    __type_proof: emptygame,
+    toString: () => toString([]),
+  };
 };
 
 type Player = "X" | "O";
-
-type EmptyGame = Moves<[]> & { __type_proof: typeof emptygame };
-type OngoingGame = Moves<NonEmptyArray<Move>> & {
-  __type_proof: typeof ongoingGame;
+type GameResult = Player | "DRAW";
+const finishedGame = Symbol();
+type FinishedGame = {
+  __type_proof: typeof finishedGame;
+  takeMoveBack: () => OngoingGame;
+  whoWonOrDraw: () => GameResult;
+  toString: () => string;
 };
-type FinishedGame = { result: GameResult } & Moves<NonEmptyArray<Move>> & {
-    __type_proof: typeof finishedGame;
+
+// function isEmptyGame(
+//   game: EmptyGame | OngoingGame | FinishedGame
+// ): game is EmptyGame {
+//   return game.__type_proof == emptygame;
+// }
+
+// function isOngoingGame(
+//   game: EmptyGame | OngoingGame | FinishedGame
+// ): game is EmptyGame {
+//   return game.__type_proof == ongoingGame;
+// }
+
+type Move = { player: Player; pos: Pos };
+const isPositionUnoccupied =
+  (moves: Move[]) =>
+  (pos: Pos): pos is UnoccupiedPosition =>
+    !moves.some((p) => p.pos.col == pos.col && p.pos.row == pos.row);
+
+const toString = (moves: Move[]): string => {
+  const matrix: string[][] = Array.from({ length: SIZE }, () =>
+    Array.from({ length: SIZE }, () => " ")
+  );
+
+  moves.forEach((move) => {
+    matrix[move.pos.row][move.pos.col] = move.player;
+  });
+  return matrix.map((row) => row.toString()).join("\n");
+};
+
+const move =
+  (allGameMoves: Move[]) =>
+  (pos: UnoccupiedPosition): OngoingGame | FinishedGame => {
+    const newMove: Move = {
+      player: allGameMoves.length % 2 == 0 ? "X" : "O",
+      pos,
+    };
+
+    const newMoves = [newMove, ...allGameMoves];
+    const gameState = calcGameState(newMoves);
+
+    const getOngoingGame = (moves: Move[]): OngoingGame => {
+      return {
+        move: move(moves),
+        takeMoveBack: () => {
+          const move1Removed = moves.slice(1);
+          return move1Removed.length == 0
+            ? startNewGame()
+            : getOngoingGame(move1Removed);
+        },
+        isPositionUnoccupied: isPositionUnoccupied(moves),
+        toString: () => toString(moves),
+        __type_proof: ongoingGame,
+      };
+    };
+
+    return gameState == "STILL_PLAYING"
+      ? getOngoingGame(newMoves)
+      : {
+          takeMoveBack: () => getOngoingGame(newMoves.slice(1)),
+          whoWonOrDraw: () => gameState,
+          toString: () => toString(newMoves),
+          __type_proof: finishedGame,
+        };
   };
 
-type GameResult = Player | "DRAW";
+// #########################################################
+// #########################################################
+// ####### CALCULATE GAMESTATE / WINNER POSITION ###########
+// #########################################################
+// #########################################################
 
-const startNewGame = (): EmptyGame => {
-  return { moves: [], __type_proof: emptygame };
-};
+const calcGameState = (moves: Move[]): GameResult | "STILL_PLAYING" => {
+  const posOf = (player: Player) =>
+    moves.filter((move) => move.player == player).map((move) => move.pos);
 
-const getWinningPosition = (moves: Move[]): Player | "None" => {
-  const hasWinningPosition = (player: Player) =>
-    isWinningPosition(
-      moves.filter((move) => move.player == player).map((move) => move.pos)
-    );
-  return hasWinningPosition("X") ? "X" : hasWinningPosition("O") ? "O" : "None";
-};
-
-const isWinningPosition = (positions: Pos[], index = 0): boolean => {
-  if (index == positions.length) {
-    return false;
-  }
-
-  const isDirectionFromPositionWinning = (direction: Direction) =>
-    countConsecutivePositions(positions[index], positions, direction) >=
-    WINNING_NUMBER;
-
-  const directions: Direction[] = Object.keys(nextPosition) as Direction[];
-  return (
-    directions.some(isDirectionFromPositionWinning) ||
-    isWinningPosition(positions, index + 1)
-  );
+  return hasWinningPosition(posOf("X"))
+    ? "X"
+    : hasWinningPosition(posOf("O"))
+    ? "O"
+    : moves.length === SIZE * SIZE
+    ? "DRAW"
+    : "STILL_PLAYING";
 };
 
 type PosNumber = {
@@ -95,8 +162,24 @@ const nextPosition = {
     row: pos.row + 1,
   }),
 };
-
 type Direction = keyof typeof nextPosition;
+
+const hasWinningPosition = (positions: Pos[], index = 0): boolean => {
+  if (index == positions.length) {
+    return false;
+  }
+
+  const isDirectionFromPositionWinning = (direction: Direction) =>
+    countConsecutivePositions(positions[index], positions, direction) >=
+    WINNING_NUMBER;
+
+  const directions: Direction[] = Object.keys(nextPosition) as Direction[];
+
+  return (
+    directions.some(isDirectionFromPositionWinning) ||
+    hasWinningPosition(positions, index + 1)
+  );
+};
 
 const countConsecutivePositions = (
   currentPos: PosNumber,
@@ -108,69 +191,4 @@ const countConsecutivePositions = (
     return 1 + countConsecutivePositions(next, positions, direction);
   }
   return 1;
-};
-
-const move =
-  (game: EmptyGame | OngoingGame) =>
-  (pos: Pos): OngoingGame | FinishedGame => {
-    if (isEmptyGame(game)) {
-      return { moves: [{ player: "X", pos }], __type_proof: ongoingGame };
-    } else if (isPositionOccupied(game)(pos)) {
-      return game;
-    }
-
-    const newMove: Move = {
-      player: game.moves[0].player == "X" ? "O" : "X",
-      pos,
-    };
-    const moves: NonEmptyArray<Move> = [newMove, ...game.moves];
-    const winningPosition = getWinningPosition(moves);
-
-    if (SIZE * SIZE == moves.length || winningPosition != "None") {
-      // Game finished
-      return {
-        moves,
-        result: winningPosition == "None" ? "DRAW" : winningPosition,
-        __type_proof: finishedGame,
-      };
-    } else {
-      // Game ongoing
-      return {
-        moves,
-        __type_proof: ongoingGame,
-      };
-    }
-  };
-
-// const takeMoveBack = (
-//   game: OngoingGame | FinishedGame
-// ): EmptyGame | OngoingGame => {
-//   const [latest, rest] = game.moves;
-//   if (rest == undefined) {
-//     return { moves: [] };
-//   }
-//   return { moves: rest };
-// };
-
-const whoWonOrDraw = (game: FinishedGame): GameResult => {
-  return game.result;
-};
-
-const isPositionOccupied =
-  (game: OngoingGame | FinishedGame) =>
-  (pos: Pos): boolean => {
-    return game.moves.some((move) => isPositionEqual(move.pos, pos));
-  };
-
-export {
-  isGameFinished,
-  EmptyGame,
-  OngoingGame,
-  FinishedGame,
-  move,
-  startNewGame,
-  whoWonOrDraw,
-  isPositionOccupied,
-  isOngoingGame,
-  isEmptyGame,
 };

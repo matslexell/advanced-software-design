@@ -1,23 +1,15 @@
 import { isArgumentsObject } from "util/types";
 import { describe, expect, test } from "@jest/globals";
-import { strict as assert } from 'assert';
+import { strict as assert } from "assert";
 
 import {
-  isGameFinished,
-  isOngoingGame,
-  EmptyGame,
-  FinishedGame,
-  OngoingGame,
-  move,
   startNewGame,
+  Pos,
+  TicTacToe,
   isEmptyGame,
-  whoWonOrDraw,
+  isOngoingGame,
+  isFinishedGame,
 } from "./TicTacToe";
-
-type Pos = {
-  col: 0 | 1 | 2;
-  row: 0 | 1 | 2;
-};
 
 const game1: Pos[] = [
   { col: 1, row: 1 },
@@ -119,11 +111,14 @@ fillMatrixAndPrint(game3);
 fillMatrixAndPrint(game4);
 fillMatrixAndPrint(game5);
 
-const playGame = (positions: Pos[]): OngoingGame | FinishedGame | EmptyGame => {
-  let game: EmptyGame | OngoingGame | FinishedGame = startNewGame();
+const playGame = (positions: Pos[]): TicTacToe => {
+  let game: TicTacToe = startNewGame();
+
   positions.forEach((pos) => {
-    if (!isGameFinished(game)) {
-      game = move(game)(pos);
+    if (isEmptyGame(game)) {
+      game = game.move(pos);
+    } else if (isOngoingGame(game) && game.isPositionUnoccupied(pos)) {
+      game = game.move(pos);
     }
   });
 
@@ -133,35 +128,40 @@ const playGame = (positions: Pos[]): OngoingGame | FinishedGame | EmptyGame => {
 describe("isGameFinished", () => {
   it("Game 1", () => {
     const game1Played = playGame(game1);
-    expect(isGameFinished(game1Played)).toBe(true);
-    if (isGameFinished(game1Played)) {
-      expect(whoWonOrDraw(game1Played)).toBe("X");
+    console.log(game1Played.toString());
+    expect(isFinishedGame(game1Played)).toBe(true);
+    if (isFinishedGame(game1Played)) {
+      expect(game1Played.whoWonOrDraw()).toBe("X");
     }
   });
   it("Game 2", () => {
     const game2Played = playGame(game2);
-    expect(isGameFinished(game2Played)).toBe(true);
-    if (isGameFinished(game2Played)) {
-      expect(whoWonOrDraw(game2Played)).toBe("O");
+    console.log(game2Played.toString());
+    expect(isFinishedGame(game2Played)).toBe(true);
+    if (isFinishedGame(game2Played)) {
+      expect(game2Played.whoWonOrDraw()).toBe("O");
     }
   });
   it("Game 3", () => {
     const game3Played = playGame(game3);
-    expect(isGameFinished(game3Played)).toBe(true);
-    if (isGameFinished(game3Played)) {
-      expect(whoWonOrDraw(game3Played)).toBe("X");
+    console.log(game3Played.toString());
+    expect(isFinishedGame(game3Played)).toBe(true);
+    if (isFinishedGame(game3Played)) {
+      expect(game3Played.whoWonOrDraw()).toBe("X");
     }
   });
   it("Game 4", () => {
     const game4Played = playGame(game4);
-    expect(isGameFinished(game4Played)).toBe(true);
-    if (isGameFinished(game4Played)) {
-      expect(whoWonOrDraw(game4Played)).toBe("DRAW");
+    console.log(game4Played.toString());
+    expect(isFinishedGame(game4Played)).toBe(true);
+    if (isFinishedGame(game4Played)) {
+      expect(game4Played.whoWonOrDraw()).toBe("DRAW");
     }
   });
   it("Game 5", () => {
     const game5Played = playGame(game5);
-    expect(isGameFinished(game5Played)).toBe(false);
+    console.log(game5Played.toString());
+    expect(isFinishedGame(game5Played)).toBe(false);
     expect(isOngoingGame(game5Played)).toBe(true);
   });
 });
