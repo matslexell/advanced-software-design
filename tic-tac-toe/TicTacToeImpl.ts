@@ -42,7 +42,7 @@ type OngoingGame = {
 };
 
 const startNewGame = (): EmptyGame => {
-  const firstMove = (pos: Pos) =>
+  const firstMove = (pos: Pos): OngoingGame =>
     move([])(pos as UnoccupiedPosition) as OngoingGame;
 
   return {
@@ -61,18 +61,6 @@ type FinishedGame = {
   whoWonOrDraw: () => GameResult;
   toString: () => string;
 };
-
-// function isEmptyGame(
-//   game: EmptyGame | OngoingGame | FinishedGame
-// ): game is EmptyGame {
-//   return game.__type_proof == emptygame;
-// }
-
-// function isOngoingGame(
-//   game: EmptyGame | OngoingGame | FinishedGame
-// ): game is EmptyGame {
-//   return game.__type_proof == ongoingGame;
-// }
 
 type Move = { player: Player; pos: Pos };
 const isPositionUnoccupied =

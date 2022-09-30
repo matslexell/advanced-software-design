@@ -9,7 +9,7 @@ import {
   isEmptyGame,
   isOngoingGame,
   isFinishedGame,
-} from "./TicTacToe";
+} from "./TicTacToeImpl";
 
 const game1: Pos[] = [
   { col: 1, row: 1 },
