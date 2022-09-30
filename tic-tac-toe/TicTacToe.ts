@@ -56,53 +56,27 @@ const startNewGame = (): EmptyGame => {
 };
 
 const getWinningPosition = (moves: Move[]): Player | "None" => {
-  const xMoves = moves
-    .filter((move) => move.player == "X")
-    .map((move) => move.pos);
-
-  if (winningPositionSub(xMoves)) {
-    return "X";
-  }
-
-  const oMoves = moves
-    .filter((move) => move.player == "O")
-    .map((move) => move.pos);
-
-  if (winningPositionSub(oMoves)) {
-    return "O";
-  }
-
-  return "None";
+  const hasWinningPosition = (player: Player) =>
+    isWinningPosition(
+      moves.filter((move) => move.player == player).map((move) => move.pos)
+    );
+  return hasWinningPosition("X") ? "X" : hasWinningPosition("O") ? "O" : "None";
 };
 
-const winningPositionSub = (positions: Pos[]): boolean => {
-  if (positions.length == 0) {
+const isWinningPosition = (positions: Pos[], index = 0): boolean => {
+  if (index == positions.length) {
     return false;
   }
-  const [head, ...rest] = positions;
-  const horizontal = 1 + count(head, rest, "RIGHT") + count(head, rest, "LEFT");
-  if (horizontal >= WINNING_NUMBER) {
-    return true;
-  }
-  const vertical = 1 + count(head, rest, "UP") + count(head, rest, "DOWN");
-  if (vertical >= WINNING_NUMBER) {
-    return true;
-  }
-  const diagonal1 =
-    1 +
-    count(head, rest, "DIAGONAL_UP_RIGHT") +
-    count(head, rest, "DIAGONAL_DOWN_LEFT");
-  if (diagonal1 >= WINNING_NUMBER) {
-    return true;
-  }
-  const diagonal2 =
-    1 +
-    count(head, rest, "DIAGONAL_UP_LEFT") +
-    count(head, rest, "DIAGONAL_DOWN_RIGHT");
-  if (diagonal2 >= WINNING_NUMBER) {
-    return true;
-  }
-  return winningPositionSub(rest);
+
+  const isDirectionFromPositionWinning = (direction: Direction) =>
+    countConsecutivePositions(positions[index], positions, direction) >=
+    WINNING_NUMBER;
+
+  const directions: Direction[] = Object.keys(nextPosition) as Direction[];
+  return (
+    directions.some(isDirectionFromPositionWinning) ||
+    isWinningPosition(positions, index + 1)
+  );
 };
 
 type PosNumber = {
@@ -110,21 +84,11 @@ type PosNumber = {
   row: number;
 };
 const nextPosition = {
-  UP: (pos: PosNumber): PosNumber => ({ col: pos.col, row: pos.row - 1 }),
   DOWN: (pos: PosNumber): PosNumber => ({ col: pos.col, row: pos.row + 1 }),
-  LEFT: (pos: PosNumber): PosNumber => ({ col: pos.col - 1, row: pos.row }),
   RIGHT: (pos: PosNumber): PosNumber => ({ col: pos.col + 1, row: pos.row }),
-  DIAGONAL_UP_LEFT: (pos: PosNumber): PosNumber => ({
-    col: pos.col - 1,
-    row: pos.row - 1,
-  }),
   DIAGONAL_DOWN_RIGHT: (pos: PosNumber): PosNumber => ({
     col: pos.col + 1,
     row: pos.row + 1,
-  }),
-  DIAGONAL_UP_RIGHT: (pos: PosNumber): PosNumber => ({
-    col: pos.col + 1,
-    row: pos.row - 1,
   }),
   DIAGONAL_DOWN_LEFT: (pos: PosNumber): PosNumber => ({
     col: pos.col - 1,
@@ -134,19 +98,16 @@ const nextPosition = {
 
 type Direction = keyof typeof nextPosition;
 
-const count = (
+const countConsecutivePositions = (
   currentPos: PosNumber,
   positions: Pos[],
   direction: Direction
 ): number => {
-  const nextPos = nextPosition[direction](currentPos);
-  if (
-    positions.some((pos) => pos.col == nextPos.col && pos.row == nextPos.row)
-  ) {
-    return 1 + count(nextPos, positions, direction);
-  } else {
-    return 0;
+  const next = nextPosition[direction](currentPos);
+  if (positions.some((pos) => pos.col == next.col && pos.row == next.row)) {
+    return 1 + countConsecutivePositions(next, positions, direction);
   }
+  return 1;
 };
 
 const move =
@@ -212,5 +173,4 @@ export {
   isPositionOccupied,
   isOngoingGame,
   isEmptyGame,
-  winningPositionSub,
 };

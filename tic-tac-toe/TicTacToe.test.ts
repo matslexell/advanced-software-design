@@ -12,7 +12,6 @@ import {
   startNewGame,
   isEmptyGame,
   whoWonOrDraw,
-  winningPositionSub
 } from "./TicTacToe";
 
 type Pos = {
@@ -130,41 +129,6 @@ const playGame = (positions: Pos[]): OngoingGame | FinishedGame | EmptyGame => {
 
   return game;
 };
-
-const pos1winning: Pos[] = [
-  { col: 1, row: 0 },
-  { col: 2, row: 1 },
-  { col: 1, row: 1 },
-  { col: 0, row: 2 },
-  { col: 1, row: 1 },
-  { col: 1, row: 2 },
-];
-
-const pos2loosing: Pos[] = [
-  { col: 0, row: 0 },
-  { col: 2, row: 1 },
-  { col: 1, row: 1 },
-  { col: 0, row: 2 },
-  { col: 1, row: 1 },
-  { col: 1, row: 2 },
-];
-
-const pos3winning: Pos[] = [
-  { col: 0, row: 0 },
-  { col: 2, row: 1 },
-  { col: 1, row: 1 },
-  { col: 0, row: 2 },
-  { col: 1, row: 1 },
-  { col: 2, row: 2 },
-];
-
-fillMatrixAndPrintSame(pos1winning);
-fillMatrixAndPrintSame(pos2loosing);
-fillMatrixAndPrintSame(pos3winning);
-
-assert(winningPositionSub(pos1winning));
-assert(!winningPositionSub(pos2loosing));
-assert(winningPositionSub(pos3winning));
 
 describe("isGameFinished", () => {
   it("Game 1", () => {
