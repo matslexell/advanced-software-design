@@ -1,8 +1,10 @@
+import java.time.DayOfWeek;
+
 public class Discount {
     private final double discountPercent;
-    private String customerTypeDiscount;
-    private String itemNameDiscount;
-    private String dayOfWeekDiscount;
+    private CustomerTypeDiscount customerTypeDiscount;
+    private Item itemDiscount;
+    private DayOfWeek dayOfWeekDiscount;
 
     public Discount(double discountPercent) {
         this.discountPercent = discountPercent;
@@ -10,11 +12,10 @@ public class Discount {
 
     public boolean doesDiscountApply(Customer c, Item item) {
         if (customerTypeDiscount != null) {
-            if (customerTypeDiscount.equals("student")) return c.isStudent();
-            else if (customerTypeDiscount.equals("employee")) return c.isEmployee();
+            return customerTypeDiscount.discountApplies(c);
         }
-        if (itemNameDiscount != null) {
-            return item.getName().equals(itemNameDiscount);
+        if (itemDiscount != null) {
+            return itemDiscount == item;
         }
         if (dayOfWeekDiscount != null) {
             return DateUtils.getDayOfWeek().equals(dayOfWeekDiscount);
@@ -25,4 +26,33 @@ public class Discount {
     public double applyDiscount(double price) {
         return price * (1 - discountPercent);
     }
+
+    public abstract class CustomerTypeDiscount {
+        public abstract boolean discountApplies(Customer c);
+    }
+
+    public class StudentDiscount extends CustomerTypeDiscount {
+
+        @Override
+        public boolean discountApplies(Customer c) {
+            return c.isStudent();
+        }
+    }
+
+    public class Employee extends CustomerTypeDiscount {
+
+        @Override
+        public boolean discountApplies(Customer c) {
+            return c.isEmployee();
+        }
+    }
+
+    public class Veteran extends CustomerTypeDiscount {
+
+        @Override
+        public boolean discountApplies(Customer c) {
+            return c.isVeteran();
+        }
+    }
+
 }

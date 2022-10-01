@@ -288,10 +288,72 @@ This is achieved by having to pass `pos: UnoccupiedPosition`, and having the typ
 # Simpler and More Correct
 
 ## 1.1.
-<Your answer goes here>
+
+Even though there's a lot to do by making this code safer, you could start by replacing Strings by appropriate types:
+
+````java
+import java.time.DayOfWeek;
+
+public class Discount {
+    private final double discountPercent;
+    private CustomerTypeDiscount customerTypeDiscount;
+    private Item itemDiscount;
+    private DayOfWeek dayOfWeekDiscount;
+
+    public Discount(double discountPercent) {
+        this.discountPercent = discountPercent;
+    }
+
+    public boolean doesDiscountApply(Customer c, Item item) {
+        if (customerTypeDiscount != null) {
+            if (customerTypeDiscount == CustomerTypeDiscount.STUDENT) return c.isStudent();
+            else if (customerTypeDiscount == CustomerTypeDiscount.EMPLOYEE) return c.isEmployee();
+        }
+        if (itemDiscount != null) {
+            return itemDiscount == item;
+        }
+        if (dayOfWeekDiscount != null) {
+            return DateUtils.getDayOfWeek().equals(dayOfWeekDiscount);
+        }
+        return false;
+    }
+
+    public double applyDiscount(double price) {
+        return price * (1 - discountPercent);
+    }
+
+    public enum CustomerTypeDiscount {
+        STUDENT, EMPLOYEE
+    }
+
+}
+````
+
+
 
 ## 1.2.
-<Your answer goes here>
+With the DayOfWeek, it won't be possible to pass in "Weekend", see code above. 
+
+However, if VETERAN is added to the CustomerTypeDiscount, the programmer might forget to update the code in doesDiscountApply. 
+
+To battle this, we can instead use abstract class for CustomerTypeDiscount, like this:
+
+```java
+    public boolean doesDiscountApply(Customer c, Item item) {
+        if (customerTypeDiscount != null) {
+            return customerTypeDiscount.discountApplies(c);
+        }
+        if (itemDiscount != null) {
+            return itemDiscount == item;
+        }
+        if (dayOfWeekDiscount != null) {
+            return DateUtils.getDayOfWeek().equals(dayOfWeekDiscount);
+        }
+        return false;
+    }
+```
+
+
 
 ## 1.3.
 <Your answer goes here>
