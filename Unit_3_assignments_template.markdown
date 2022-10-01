@@ -244,7 +244,7 @@ const move =
   (pos: UnoccupiedPosition): OngoingGame | FinishedGame => {
     const newMove: Move = {
       player: allGameMoves.length % 2 == 0 ? "X" : "O",
-      pos: {...pos},
+      pos: { col: pos.col, row: pos.row },
     };
 
     const newMoves = [newMove, ...allGameMoves];

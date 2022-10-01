@@ -71,7 +71,7 @@ const move =
   (pos: UnoccupiedPosition): OngoingGame | FinishedGame => {
     const newMove: Move = {
       player: allGameMoves.length % 2 == 0 ? "X" : "O",
-      pos,
+      pos: { col: pos.col, row: pos.row },
     };
 
     const newMoves = [newMove, ...allGameMoves];
@@ -81,10 +81,10 @@ const move =
       return {
         move: move(moves),
         takeMoveBack: () => {
-          const move1Removed = moves.slice(1);
-          return move1Removed.length == 0
+          const latestMoveRemoved = moves.slice(1);
+          return latestMoveRemoved.length == 0
             ? startNewGame()
-            : getOngoingGame(move1Removed);
+            : getOngoingGame(latestMoveRemoved);
         },
         isPositionUnoccupied: isPositionUnoccupied(moves),
         toString: () => toString(moves),

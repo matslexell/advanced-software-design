@@ -32,7 +32,6 @@ type UnoccupiedPosition = {
   __type_proof: typeof validpos;
 } & Pos;
 
-
 const startNewGame = (): EmptyGame => {
   const firstMove = (pos: Pos): OngoingGame =>
     move([])(pos as UnoccupiedPosition) as OngoingGame;
@@ -54,7 +53,7 @@ const move =
   (pos: UnoccupiedPosition): OngoingGame | FinishedGame => {
     const newMove: Move = {
       player: allGameMoves.length % 2 == 0 ? "X" : "O",
-      pos: {...pos},
+      pos: { col: pos.col, row: pos.row },
     };
 
     const newMoves = [newMove, ...allGameMoves];
