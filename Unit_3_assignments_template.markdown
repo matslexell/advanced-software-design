@@ -351,12 +351,46 @@ To battle this, we can instead use abstract class for CustomerTypeDiscount, like
         }
         return false;
     }
+
+  .
+  .
+  .
+    
+    public abstract class CustomerTypeDiscount {
+        public abstract boolean discountApplies(Customer c);
+    }
+
+    public class StudentDiscount extends CustomerTypeDiscount {
+
+        @Override
+        public boolean discountApplies(Customer c) {
+            return c.isStudent();
+        }
+    }
+
+    public class Employee extends CustomerTypeDiscount {
+
+        @Override
+        public boolean discountApplies(Customer c) {
+            return c.isEmployee();
+        }
+    }
+
+    public class Veteran extends CustomerTypeDiscount {
+
+        @Override
+        public boolean discountApplies(Customer c) {
+            return c.isVeteran();
+        }
+    }
 ```
 
 
 
 ## 1.3.
-<Your answer goes here>
+I would just have the item itself as the discount at `private Item itemDiscount;`.
+
+
 
 ## 1.4.
 <Your answer goes here>

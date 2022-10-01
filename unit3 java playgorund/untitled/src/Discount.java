@@ -39,7 +39,7 @@ public class Discount {
         }
     }
 
-    public class Employee extends CustomerTypeDiscount {
+    public class EmployeeDiscount extends CustomerTypeDiscount {
 
         @Override
         public boolean discountApplies(Customer c) {
@@ -47,7 +47,7 @@ public class Discount {
         }
     }
 
-    public class Veteran extends CustomerTypeDiscount {
+    public class VeteranDiscount extends CustomerTypeDiscount {
 
         @Override
         public boolean discountApplies(Customer c) {
