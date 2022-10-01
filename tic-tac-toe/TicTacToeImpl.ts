@@ -6,33 +6,23 @@ export {
   isOngoingGame,
   isFinishedGame,
 };
+const emptygame = Symbol();
+const validpos = Symbol();
+const ongoingGame = Symbol();
+const finishedGame = Symbol();
+
 const WINNING_NUMBER = 3;
 const SIZE = 3;
 type Pos = {
   col: 0 | 1 | 2;
   row: 0 | 1 | 2;
 };
-
 type TicTacToe = EmptyGame | OngoingGame | FinishedGame;
-const isEmptyGame = (game: TicTacToe): game is EmptyGame =>
-  game.__type_proof == emptygame;
-const isOngoingGame = (game: TicTacToe): game is OngoingGame =>
-  game.__type_proof == ongoingGame;
-const isFinishedGame = (game: TicTacToe): game is FinishedGame =>
-  game.__type_proof == finishedGame;
-
-const emptygame = Symbol();
 type EmptyGame = {
   __type_proof: typeof emptygame;
   move: (pos: Pos) => OngoingGame;
   toString: () => string;
 };
-
-const validpos = Symbol();
-type UnoccupiedPosition = {
-  __type_proof: typeof validpos;
-} & Pos;
-const ongoingGame = Symbol();
 type OngoingGame = {
   __type_proof: typeof ongoingGame;
   move: (pos: UnoccupiedPosition) => OngoingGame | FinishedGame;
@@ -40,6 +30,25 @@ type OngoingGame = {
   isPositionUnoccupied: ReturnType<typeof isPositionUnoccupied>;
   toString: () => string;
 };
+type FinishedGame = {
+  __type_proof: typeof finishedGame;
+  takeMoveBack: () => OngoingGame;
+  whoWonOrDraw: () => GameResult;
+  toString: () => string;
+};
+type UnoccupiedPosition = {
+  __type_proof: typeof validpos;
+} & Pos;
+type Player = "X" | "O";
+type GameResult = Player | "DRAW";
+type Move = { player: Player; pos: Pos };
+
+const isEmptyGame = (game: TicTacToe): game is EmptyGame =>
+  game.__type_proof == emptygame;
+const isOngoingGame = (game: TicTacToe): game is OngoingGame =>
+  game.__type_proof == ongoingGame;
+const isFinishedGame = (game: TicTacToe): game is FinishedGame =>
+  game.__type_proof == finishedGame;
 
 const startNewGame = (): EmptyGame => {
   const firstMove = (pos: Pos): OngoingGame =>
@@ -52,32 +61,10 @@ const startNewGame = (): EmptyGame => {
   };
 };
 
-type Player = "X" | "O";
-type GameResult = Player | "DRAW";
-const finishedGame = Symbol();
-type FinishedGame = {
-  __type_proof: typeof finishedGame;
-  takeMoveBack: () => OngoingGame;
-  whoWonOrDraw: () => GameResult;
-  toString: () => string;
-};
-
-type Move = { player: Player; pos: Pos };
 const isPositionUnoccupied =
   (moves: Move[]) =>
   (pos: Pos): pos is UnoccupiedPosition =>
     !moves.some((p) => p.pos.col == pos.col && p.pos.row == pos.row);
-
-const toString = (moves: Move[]): string => {
-  const matrix: string[][] = Array.from({ length: SIZE }, () =>
-    Array.from({ length: SIZE }, () => " ")
-  );
-
-  moves.forEach((move) => {
-    matrix[move.pos.row][move.pos.col] = move.player;
-  });
-  return matrix.map((row) => row.toString()).join("\n");
-};
 
 const move =
   (allGameMoves: Move[]) =>
@@ -115,11 +102,27 @@ const move =
         };
   };
 
+const toString = (moves: Move[]): string => {
+  const matrix: string[][] = Array.from({ length: SIZE }, () =>
+    Array.from({ length: SIZE }, () => " ")
+  );
+
+  moves.forEach((move) => {
+    matrix[move.pos.row][move.pos.col] = move.player;
+  });
+  return matrix.map((row) => row.toString()).join("\n");
+};
+
 // #########################################################
 // #########################################################
 // ####### CALCULATE GAMESTATE / WINNER POSITION ###########
 // #########################################################
 // #########################################################
+
+type PosNumber = {
+  col: number;
+  row: number;
+};
 
 const calcGameState = (moves: Move[]): GameResult | "STILL_PLAYING" => {
   const posOf = (player: Player) =>
@@ -134,10 +137,6 @@ const calcGameState = (moves: Move[]): GameResult | "STILL_PLAYING" => {
     : "STILL_PLAYING";
 };
 
-type PosNumber = {
-  col: number;
-  row: number;
-};
 const nextPosition = {
   DOWN: (pos: PosNumber): PosNumber => ({ col: pos.col, row: pos.row + 1 }),
   RIGHT: (pos: PosNumber): PosNumber => ({ col: pos.col + 1, row: pos.row }),

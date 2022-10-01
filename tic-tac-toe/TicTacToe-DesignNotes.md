@@ -56,5 +56,5 @@ const isPositionOccupied = (game: OngoingGame | FinishedGame) => (pos: Pos) => b
 
 
 
-
+From here on the rest of the "notes" are in the code.....
 
